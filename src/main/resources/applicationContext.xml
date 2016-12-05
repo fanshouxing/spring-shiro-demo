@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright (c) 2016. 上海趣医网络技术服务有限公司 版权所有
+  ~ Shanghai QuYi Network Technology Co., Ltd. All Rights Reserved.
+  ~
+  ~ This is NOT a freeware,use is subject to license terms.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--配置spring MVC-->
+
+    <!--1：开启springMVC注解模式-->
+    <!--简化配置：
+        (1)自动注册DefaultAnnotationHandlerMapping，AnnotationMethodHandlerAdapter
+        (2)提供一系列：数据绑定，数字和日期的format  @NumberFormat，@DateTimeFormat
+            xml,json默认读写支持
+     -->
+    <mvc:annotation-driven/>
+
+    <!--2：servelt-mapping 映射路径:"/"-->
+    <!--静态资源文件配置
+        1:加入对静态资源的处理:js，gif,png
+        2:允许使用"/"做整体映射
+    -->
+    <mvc:default-servlet-handler/>
+
+    <!--3：配置jsp 显示viewResolver-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--4：扫描web相关的bean-->
+
+    <context:component-scan base-package="com.quyiyuan.*"/>
+
+
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="cacheManager" ref="cacheManager"/>
+        <!-- Single realm app.  If you have multiple realms, use the 'realms' property instead. -->
+        <property name="sessionMode" value="native"/>
+        <property name="realm" ref="jdbcRealm"/>
+    </bean>
+
+
+    <bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+        <!-- Set a net.sf.ehcache.CacheManager instance here if you already have one.  If not, a new one
+             will be creaed with a default config:
+             <property name="cacheManager" ref="ehCacheManager"/> -->
+        <!-- If you don't have a pre-built net.sf.ehcache.CacheManager instance to inject, but you want
+             a specific Ehcache configuration to be used, specify that here.  If you don't, a default
+             will be used.:-->
+        <property name="cacheManagerConfigFile" value="classpath:ehcache.xml"/>
+    </bean>
+
+    <!-- Used by the SecurityManager to access security data (users, roles, etc).
+         Many other realm implementations can be used too (PropertiesRealm,
+         LdapRealm, etc. -->
+    <bean id="jdbcRealm" class="com.quyiyuan.realms.ShiroRealm">
+
+    </bean>
+
+    <!-- =========================================================
+         Shiro Spring-specific integration
+         ========================================================= -->
+    <!-- Post processor that automatically invokes init() and destroy() methods
+         for Spring-configured Shiro objects so you don't have to
+         1) specify an init-method and destroy-method attributes for every bean
+            definition and
+         2) even know which Shiro objects require these methods to be
+            called. -->
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+
+    <!-- Enable Shiro Annotations for Spring-configured beans.  Only run after
+         the lifecycleBeanProcessor has run: -->
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on="lifecycleBeanPostProcessor"/>
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+
+
+    <!-- Define the Shiro Filter here (as a FactoryBean) instead of directly in web.xml -
+         web.xml uses the DelegatingFilterProxy to access this bean.  This allows us
+         to wire things with more control as well utilize nice Spring things such as
+         PropertiesPlaceholderConfigurer and abstract beans or anything else we might need: -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <property name="securityManager" ref="securityManager"/>
+        <property name="loginUrl" value="/login.jsp"/>
+        <property name="successUrl" value="/list.jsp"/>
+        <property name="unauthorizedUrl" value="/unauthorized.jsp"/>
+        <!--配置哪些页面需要受保护，以及访问这些页面需要哪些权限
+            anon：表示可以匿名访问
+            authc: 表示必须登录才能访问的
+        -->
+        <property name="filterChainDefinitions">
+            <value>
+                /login.jsp = anon
+                /logo.png = anon
+                /shiro.css = anon
+                /s/login = anon
+                # allow WebStart to pull the jars for the swing app:
+                /*.jar = anon
+                # everything else requires authentication:
+                /** = authc
+            </value>
+        </property>
+    </bean>
+
+</beans>
