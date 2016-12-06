@@ -103,6 +103,7 @@
         <property name="filterChainDefinitions">
             <value>
                 /login.jsp = anon
+                /shiro/login = anon
                 /logo.png = anon
                 /shiro.css = anon
                 /s/login = anon

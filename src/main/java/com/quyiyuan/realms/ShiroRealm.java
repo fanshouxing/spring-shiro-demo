@@ -1,30 +1,38 @@
-/*
- * Copyright (c) 2016. 上海趣医网络技术服务有限公司 版权所有
- * Shanghai QuYi Network Technology Co., Ltd. All Rights Reserved.
- *
- * This is NOT a freeware,use is subject to license terms.
- */
-
 package com.quyiyuan.realms;
 
+
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.realm.Realm;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.realm.AuthenticatingRealm;
 
 /**
  * Created by Fsx on 2016/12/5.
  */
-public class ShiroRealm implements Realm {
-    public String getName() {
-        return null;
-    }
+@Slf4j
+public class ShiroRealm extends AuthenticatingRealm {
 
-    public boolean supports(AuthenticationToken authenticationToken) {
-        return false;
-    }
+    @Override
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+        log.info("doGetAuthenticationInfo:"+token);
 
-    public AuthenticationInfo getAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
+        //1、把AuthenticationToken转换为UsernamePasswordToekn
+        UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) token;
+
+        //2、从UsernamePasswordToken 中获取username
+        String username = usernamePasswordToken.getUsername();
+
+        //3、调用数据库方法、从数据库中查询username对应的用户记录
+
+
+        //4、若用户不存在，则抛出UnknowAccountException 异常
+
+        //5、根据用户信息的情况，决定是否需要抛出其他的AuthenticationException异常
+
+        //6、根据用户的情况，来构建AuthenticationInfo对象并返回。
+
         return null;
     }
 }
