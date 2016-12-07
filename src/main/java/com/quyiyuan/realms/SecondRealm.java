@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2016. 上海趣医网络技术服务有限公司 版权所有
+ * Shanghai QuYi Network Technology Co., Ltd. All Rights Reserved.
+ *
+ * This is NOT a freeware,use is subject to license terms.
+ */
+
 package com.quyiyuan.realms;
 
 
@@ -11,12 +18,13 @@ import org.apache.shiro.util.ByteSource;
  * Created by Fsx on 2016/12/5.
  */
 @Slf4j
-public class ShiroRealm extends AuthenticatingRealm {
+public class SecondRealm extends AuthenticatingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         log.info("doGetAuthenticationInfo:"+token);
 
+        log.info("[SecondRealm]");
         //1、把AuthenticationToken转换为UsernamePasswordToekn
         UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) token;
 
@@ -40,9 +48,9 @@ public class ShiroRealm extends AuthenticatingRealm {
         //2)、credentials: 密码
         Object credentials = null;//"fc1709d0a95a6be30bc5926fdb7f22f4";
         if ("admin".equals(username)){
-            credentials = "038bdaf98f2037b31f1e75b5b4c9b26e";
+            credentials = "ce2f6417c7e1d32c1d81a797ee0b499f87c5de06";
         }else if ("user".equals(username)){
-            credentials = "098d2c478e9c11555ce2823231e02ec1";
+            credentials = "073d4c3ae812935f23cb3f2a71943f49e082a718";
         }
         //3)、realmName： 当前realm对象的name，调用父类的getName（）方法即可
         String realmName = getName();
@@ -56,9 +64,9 @@ public class ShiroRealm extends AuthenticatingRealm {
 
     public static void main(String[] args) {
 
-        String hashAlgorithmName = "MD5";
+        String hashAlgorithmName = "SHA1";
         Object credentials = "123456";
-        Object slat = ByteSource.Util.bytes("user");
+        Object slat = ByteSource.Util.bytes("admin");
         int hashIterations = 1024;
         Object result = new SimpleHash(hashAlgorithmName,credentials,slat,hashIterations);
         System.out.println(result);
