@@ -120,25 +120,39 @@
         <property name="loginUrl" value="/login.jsp"/>
         <property name="successUrl" value="/list.jsp"/>
         <property name="unauthorizedUrl" value="/unauthorized.jsp"/>
+
+
+        <property name="filterChainDefinitionMap" ref="filterChainDefinitionMap"></property>
         <!--配置哪些页面需要受保护，以及访问这些页面需要哪些权限
             anon：表示可以匿名访问
             authc: 表示必须登录才能访问的
             logout: 登出
         -->
-        <property name="filterChainDefinitions">
-            <value>
-                /login.jsp = anon
-                /shiro/login = anon
-                /shiro/logout = logout
-                /logo.png = anon
-                /shiro.css = anon
-                /s/login = anon
-                # allow WebStart to pull the jars for the swing app:
-                /*.jar = anon
-                # everything else requires authentication:
-                /** = authc
-            </value>
-        </property>
+        <!--<property name="filterChainDefinitions">-->
+            <!--<value>-->
+                <!--/login.jsp = anon-->
+                <!--/shiro/login = anon-->
+                <!--/shiro/logout = logout-->
+                <!--/user.jsp = roles[user]-->
+                <!--/admin.jsp = roles[admin]-->
+                <!--/logo.png = anon-->
+                <!--/shiro.css = anon-->
+                <!--/s/login = anon-->
+                <!--# allow WebStart to pull the jars for the swing app:-->
+                <!--/*.jar = anon-->
+                <!--# everything else requires authentication:-->
+                <!--/** = authc-->
+            <!--</value>-->
+        <!--</property>-->
     </bean>
+    <!--配置一个bean ，该bean实际是一个Map，通过实例工厂方法的方式-->
+    <bean id="filterChainDefinitionMap" factory-bean="filterChainDefinitionMapBuilder"
+          factory-method="buildFilterChainDefinitionMap"></bean>
+
+    <bean id="filterChainDefinitionMapBuilder"
+          class="com.quyiyuan.factory.FilterChainDefinitionMapBuilder">
+
+    </bean>
+    <bean id="shiroService" class="com.quyiyuan.service.ShiroService"></bean>
 
 </beans>

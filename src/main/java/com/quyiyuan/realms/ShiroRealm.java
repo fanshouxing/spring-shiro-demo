@@ -3,15 +3,21 @@ package com.quyiyuan.realms;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.*;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.crypto.hash.SimpleHash;
-import org.apache.shiro.realm.AuthenticatingRealm;
+import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Fsx on 2016/12/5.
  */
 @Slf4j
-public class ShiroRealm extends AuthenticatingRealm {
+public class ShiroRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
@@ -62,5 +68,23 @@ public class ShiroRealm extends AuthenticatingRealm {
         int hashIterations = 1024;
         Object result = new SimpleHash(hashAlgorithmName,credentials,slat,hashIterations);
         System.out.println(result);
+    }
+
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        //1、PrincipalCollection 获取登录用户信息
+        Object principal = principals.getPrimaryPrincipal();
+        //2、利用登录的用户信息来获取用户当前用户的角色或者权限（可能需要查询数据库）
+        Set<String> roles = new HashSet<>();
+        roles.add("user");
+        if ("admin".equals(principal)){
+            roles.add("admin");
+        }
+        //3、创建SimpleAuthorizationInfo ,并设置reles属性
+
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo(roles);
+        //4、 返回SimpleAuthorizationInfo对象
+
+        return info;
     }
 }

@@ -13,12 +13,28 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <html>
 <head>
     <title>List</title>
 </head>
 <body>
     <h2>List Page</h2>
+
+    Welcome: <shiro:principal></shiro:principal>
+
+    <shiro:hasRole name="admin">
+        <hr/>
+        <a href="admin.jsp">Admin Page</a>
+    </shiro:hasRole>
+
+    <shiro:hasRole name="user">
+        <hr/>
+        <a href="user.jsp">User Page</a>
+    </shiro:hasRole>
+
+    <hr/>
+    <a href="/shiro/testAnnotation">Test Annotation</a>
 
     <a href="/shiro/logout">Logout</a>
 </body>
